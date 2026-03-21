@@ -1,0 +1,182 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Model Router API",
+    "description": "Cost-aware multi-model AI orchestration. Routes prompts to the right Azure OpenAI model and executes business tools.",
+    "version": "1.0",
+    "contact": {
+      "name": "Enterprise AI Team"
+    }
+  },
+  "host": "<your-api-host>.azurewebsites.net",
+  "basePath": "/api/router",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/route": {
+      "post": {
+        "summary": "Route Prompt",
+        "description": "Classifies the user prompt, routes it to the appropriate AI model, and optionally executes a business tool. Returns a structured response with routing telemetry.",
+        "operationId": "RoutePrompt",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PromptRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with AI answer and routing metadata",
+            "schema": {
+              "$ref": "#/definitions/PromptResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid request — prompt text is missing or malformed"
+          },
+          "500": {
+            "description": "Internal routing error"
+          }
+        }
+      }
+    },
+    "/tools": {
+      "get": {
+        "summary": "List Registered Tools",
+        "description": "Returns all business tools available in the orchestrator.",
+        "operationId": "GetRegisteredTools",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of registered tool names"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Liveness probe for the orchestrator API.",
+        "operationId": "HealthCheck",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PromptRequest": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The user's natural language prompt or utterance from Copilot Studio."
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "Optional Copilot Studio conversation session ID for tracing."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Optional user identity for personalisation and audit logging."
+        },
+        "routingHint": {
+          "$ref": "#/definitions/RoutingHint"
+        }
+      }
+    },
+    "RoutingHint": {
+      "type": "object",
+      "properties": {
+        "forceReasoning": {
+          "type": "boolean",
+          "description": "Force routing to the Reasoning model regardless of classification."
+        },
+        "forceFast": {
+          "type": "boolean",
+          "description": "Force routing to the Fast model regardless of classification."
+        },
+        "preferredModel": {
+          "type": "string",
+          "description": "Optional preferred model deployment name override."
+        }
+      }
+    },
+    "PromptResponse": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string",
+          "description": "The AI-generated answer to surface in Copilot Studio."
+        },
+        "routingDecision": {
+          "$ref": "#/definitions/RoutingDecision"
+        },
+        "toolResult": {
+          "$ref": "#/definitions/ToolExecutionResult"
+        },
+        "latencyMs": {
+          "type": "integer",
+          "description": "End-to-end latency in milliseconds."
+        },
+        "tokensUsed": {
+          "type": "integer",
+          "description": "Total tokens consumed across all model calls."
+        },
+        "estimatedCostUsd": {
+          "type": "number",
+          "description": "Estimated USD cost for this request based on token usage."
+        }
+      }
+    },
+    "RoutingDecision": {
+      "type": "object",
+      "properties": {
+        "intentType": {
+          "type": "string",
+          "enum": ["Simple", "Analytical", "Business", "Embedding", "Unknown"]
+        },
+        "modelUsed": {
+          "type": "string"
+        },
+        "confidenceScore": {
+          "type": "number"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "matchedSignals": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "ToolExecutionResult": {
+      "type": "object",
+      "properties": {
+        "toolName": { "type": "string" },
+        "success": { "type": "boolean" },
+        "rawData": { "type": "string" }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "apiKeyHeader": {
+      "type": "apiKey",
+      "name": "X-Api-Key",
+      "in": "header"
+    }
+  },
+  "security": [
+    { "apiKeyHeader": [] }
+  ]
+}

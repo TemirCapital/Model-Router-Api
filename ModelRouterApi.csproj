@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ModelRouterApi</RootNamespace>
+    <AssemblyName>ModelRouterApi</AssemblyName>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Azure OpenAI SDK (includes OpenAI package) -->
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+
+    <!-- Swagger/OpenAPI for Copilot Studio connector generation -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+
+    <!-- Application Insights for enterprise telemetry (optional) -->
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+  </ItemGroup>
+
+</Project>

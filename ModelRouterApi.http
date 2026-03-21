@@ -1,0 +1,90 @@
+@baseUrl = https://localhost:7001/api/router
+
+### ── Health Check ─────────────────────────────────────────────────────────────
+GET {{baseUrl}}/health
+
+### ── Discover registered tools ───────────────────────────────────────────────
+GET {{baseUrl}}/tools
+
+### ── Route: Simple prompt → Fast Model ───────────────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "What is Azure?",
+  "sessionId": "test-session-001",
+  "userId": "dev-user"
+}
+
+### ── Route: Analytical prompt → Reasoning Model ─────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Compare Azure AI Foundry and Copilot Studio. When should an enterprise team choose one over the other?",
+  "sessionId": "test-session-002",
+  "userId": "dev-user"
+}
+
+### ── Route: Business action → CRM Tool + Reasoning Model ────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Show customer details for Contoso Ltd.",
+  "sessionId": "test-session-003",
+  "userId": "dev-user"
+}
+
+### ── Route: Business action → Order Tool ─────────────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Check order status for ORD-98231",
+  "sessionId": "test-session-004",
+  "userId": "dev-user"
+}
+
+### ── Route: Business action → Case Tool ──────────────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Open case for integration latency issue with high priority",
+  "sessionId": "test-session-005",
+  "userId": "dev-user"
+}
+
+### ── Route: Force reasoning via routing hint ─────────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Hi",
+  "sessionId": "test-session-006",
+  "userId": "dev-user",
+  "routingHint": {
+    "forceReasoning": true
+  }
+}
+
+### ── Route: Analytical with why keyword ──────────────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Why is multi-model routing important for enterprise AI cost governance?",
+  "sessionId": "test-session-007",
+  "userId": "dev-user"
+}
+
+### ── Route: Scheduler Tool ───────────────────────────────────────────────────
+POST {{baseUrl}}/route
+Content-Type: application/json
+
+{
+  "text": "Schedule a Quarterly Business Review with the Contoso team for next Tuesday",
+  "sessionId": "test-session-008",
+  "userId": "dev-user"
+}
